@@ -21,12 +21,19 @@
         }
         i{
             position: absolute;
-            color: cadetblue;
+            color: rgb(10, 113, 173);
+            top: -150px;
+            z-index: 100;
+        }
+        p{
+            text-align: center;
+            font-size: 3rem;
         }
     </style>
 </head>
 <body>
 
+    <p>Всего капель на странице: <span id="count"></span></p>
 
     <script>
 
@@ -40,28 +47,30 @@
         this.timer;
         this.coorsY = -50;
         this.speed = this.generateRandom(5, 10);
+        this.maxHeight = document.documentElement.clientHeight;
 
         this.createDrop = function(){
-            let.el = document.createElement('i');
+            let el = document.createElement('i');
             el.classList.add('bi');
             el.classList.add('bi-droplet-fill');
             el.id = `drop${num}`;
             el.style.left = `${this.generateRandom(0, document.documentElement.clientWidth)}px`;
-            el.style.fontSize = `${this.generateRandom(0, 50)}px`;
-
+            el.style.fontSize = `${this.generateRandom(8, 50)}px`;
             document.body.append(el);
             this.el = el;
         }
 
         this.moveDrop = function(){
-            this.el.style.top = `${coordY}px`;
-            this.coorsY = this.speed;
-
+            this.el.style.top = `${this.coorsY}px`;
+            this.coorsY += this.speed;
+            if(this.coorsY > this.maxHeight){
+                clearInterval(this.timer);
+                this.el.remove();
+            }
         }
 
         this.dropDropped = function(){
             this.timer = setInterval(this.moveDrop.bind(this), 50);
-
         }
     }
 
@@ -76,9 +85,28 @@
             drops[numDrop - 1].dropDropped();
             numDrop++;
         }, 50)
+
+        DropInfo(document.getElementsByTagName('i'), document.getElementById('count'));
+    }
+
+    function DropInfo(el1, el2){
+        timer2 = setInterval(function(){
+            el2.innerText = el1.length;
+        }, 100)
     }
 
     startDrop();
+
+    function stopDrop(){
+        clearInterval(timer1);
+        //clearInterval(timer2);
+        document.getElementById('count').innerText = 0;
+        for(let el of drops){
+            /* item.el.remove();
+            item.stopDrop(); */
+        }
+        drops.splice(0);
+    }
 
     </script>
 </body>
